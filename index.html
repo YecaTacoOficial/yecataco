@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#a92720">
+<title>YecaTaco | Menú para llevar</title>
+<style>
+:root{--red:#a92720;--red-dark:#7e1d19;--cream:#fff8ee;--ink:#30231e;--muted:#796a62;--line:#eadfd5;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+header{background:var(--red);color:white;padding:25px 16px;text-align:center;border-bottom:5px solid #e6b34f}
+h1{margin:0;font-size:2.2rem;letter-spacing:.04em}header p{margin:7px 0 0;font-size:.9rem}
+main{max-width:760px;margin:20px auto;padding:0 13px 40px}
+.welcome{background:#fff0d4;padding:13px 15px;border-radius:12px;line-height:1.45}
+h2{color:var(--red);margin:0 0 8px;font-size:1.35rem}.hint{color:var(--muted);font-size:.9rem;margin:0 0 12px}
+.tabs{display:flex;gap:7px;overflow-x:auto;padding:14px 0}.tabs button{border:0;border-radius:20px;background:#eee2d8;color:var(--ink);padding:10px 14px;font-weight:bold;white-space:nowrap}.tabs button.active{background:var(--red);color:white}
+.panel,.cart{display:none;background:white;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:15px}.panel.active{display:block}
+.product{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.product:last-child{border-bottom:0}
+.name{font-weight:700}.desc{font-size:.83rem;color:var(--muted);margin-top:4px;line-height:1.35}.price{font-weight:bold;color:var(--ink);margin-top:5px}
+.stepper{display:flex;align-items:center;gap:9px;flex-shrink:0}.stepper button{width:34px;height:34px;border:0;border-radius:50%;background:#f1e6dd;color:var(--red);font-size:1.2rem;font-weight:bold}.stepper span{min-width:16px;text-align:center;font-weight:bold}
+.extra{font-size:.88rem;margin-top:7px;display:flex;gap:6px;align-items:center}.extra input{accent-color:var(--red)}
+.package{padding:13px 0;border-bottom:1px solid var(--line)}.package:last-child{border-bottom:0}.package p{color:var(--muted);font-size:.88rem;line-height:1.45}
+select,input,textarea{font:inherit;border:1px solid #d8c9bd;border-radius:8px;padding:9px;background:white;max-width:100%}
+.field{display:grid;gap:5px;margin:9px 0}.field label{font-size:.88rem;font-weight:bold}
+.add{border:0;background:var(--red);color:white;border-radius:8px;padding:10px 13px;font-weight:bold;margin-top:8px}
+.cart{display:block}.cartline{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.cartline small{display:block;color:var(--muted);margin-top:3px}
+.remove{border:0;background:none;color:var(--red);font-weight:bold}.total{display:flex;justify-content:space-between;font-size:1.25rem;font-weight:bold;padding:13px 0;border-top:2px solid var(--ink);margin-top:10px}
+.full{width:100%;border:0;border-radius:9px;background:var(--red);color:white;padding:12px;font-weight:bold;margin-top:9px}.secondary{background:#eee2d8;color:var(--ink)}
+.muted{font-size:.82rem;color:var(--muted);line-height:1.4}
+@media(max-width:430px){.product{align-items:flex-start}.stepper{gap:6px}.stepper button{width:31px;height:31px}}
+</style></head>
+<body>
+<header><h1>🌮 YecaTaco</h1><p>MENÚ DIGITAL · PEDIDOS PARA LLEVAR</p></header>
+<main>
+<div class="welcome"><b>¡Bienvenido!</b><br>Selecciona tus productos, elige las cantidades y agrégalos a tu carrito.</div>
+<nav class="tabs">
+<button class="active" data-tab="tacos">Tacos</button><button data-tab="paquetes">Paquetes</button><button data-tab="carne">Carne cruda</button><button data-tab="extras">Complementos</button><button data-tab="bebidas">Bebidas</button>
+</nav>
+<section id="tacos" class="panel active">
+<h2>Tacos</h2><p class="hint">$30 cada taco · Agrega queso por $7 adicionales.</p>
+<div id="tacoProducts"></div>
+</section>
+<section id="paquetes" class="panel">
+<h2>Paquetes</h2><p class="hint">El contenido y las cantidades son establecidos. Si no deseas algún ingrediente, puedes solicitar reemplazarlo por otro complemento disponible.</p>
+<div id="packageProducts"></div>
+</section>
+<section id="carne" class="panel">
+<h2>Carne cruda</h2><p class="hint">Escribe el importe que deseas. Puedes combinar diferentes tipos de carne en un mismo pedido.</p>
+<div id="rawProducts"></div>
+<div class="field"><label for="otherRaw">Gorditos o cecina picada (precio por confirmar)</label><input id="otherRaw" placeholder="Ej. $50 de gorditos"></div><button class="add" id="addOtherRaw">Agregar solicitud</button>
+</section>
+<section id="extras" class="panel">
+<h2>Complementos y extras</h2><div id="extraProducts"></div>
+</section>
+<section id="bebidas" class="panel">
+<h2>Bebidas</h2><h3>Refrescos · ½ litro</h3><div id="sodaProducts"></div><h3>Aguas de sabor · 1 litro</h3><div id="waterProducts"></div><p class="muted">Los sabores disponibles pueden cambiar según el día.</p>
+</section>
+<section class="cart">
+<h2>🛒 Mi pedido</h2><div id="cartItems" class="muted">Aún no agregas productos.</div>
+<div class="total"><span>Total</span><span>$<span id="total">0</span></span></div>
+<div class="field"><label for="customer">Nombre</label><input id="customer" placeholder="¿A nombre de quién va el pedido?"></div>
+<div class="field"><label for="notes">Indicaciones adicionales</label><textarea id="notes" rows="2" placeholder="Escribe aquí tus indicaciones"></textarea></div>
+<button class="full" id="sendOrder">Enviar pedido</button><button class="full secondary" id="clear">Vaciar carrito</button>
+<p class="muted" id="status">Tus pedidos se enviarán de forma segura al sistema de YecaTaco.</p>
+</section>
+<section style="max-width:760px;margin:0 auto 30px;padding:0 13px"><button class="full secondary" id="adminToggle" type="button">Administración</button><div id="adminPanel" class="panel" style="margin-top:10px"><h2>Panel de administración</h2><div id="adminLogin"><p class="muted">Acceso exclusivo para la persona encargada.</p><div class="field"><label for="adminEmail">Correo</label><input id="adminEmail" type="email" autocomplete="username" placeholder="Correo de administración"></div><div class="field"><label for="adminPassword">Contraseña</label><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Contraseña"></div><button class="full" id="loginAdmin">Iniciar sesión</button></div><div id="adminDashboard" hidden><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="add" id="refreshOrders">Actualizar pedidos</button><button class="add" id="logoutAdmin">Cerrar sesión</button></div><div id="ordersList" class="muted" style="margin-top:12px">Inicia sesión para consultar pedidos.</div></div><p class="muted" id="adminStatus"></p></div></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const cart=[];
+const tacoNames=['Cecina','Longaniza','Adobada','Campechano (cecina + longaniza)','Campechano (cecina + adobada)','Campechano (longaniza + adobada)'];
+function makeStepper(container,callback){let count=0;const wrap=document.createElement('div');wrap.className='stepper';const minus=document.createElement('button');minus.textContent='−';minus.setAttribute('aria-label','Disminuir');const value=document.createElement('span');value.textContent='0';const plus=document.createElement('button');plus.textContent='+';plus.setAttribute('aria-label','Aumentar');minus.onclick=()=>{count=Math.max(0,count-1);value.textContent=count;callback(count)};plus.onclick=()=>{count++;value.textContent=count;callback(count)};wrap.append(minus,value,plus);container.append(wrap)}
+function productRow(parent,name,price,description='',onAdd=null){const row=document.createElement('div');row.className='product';const info=document.createElement('div');const title=document.createElement('div');title.className='name';title.textContent=name;info.append(title);if(description){const d=document.createElement('div');d.className='desc';d.textContent=description;info.append(d)}const p=document.createElement('div');p.className='price';p.textContent=price;info.append(p);const controls=document.createElement('div');row.append(info,controls);parent.append(row);if(onAdd)onAdd(controls);return row}
+function add(name,price,detail=''){cart.push({name,price,detail});renderCart()}
+const tacoBox=document.getElementById('tacoProducts');
+tacoNames.forEach(name=>{let qty=0,cheese=false;const row=productRow(tacoBox,name,'$30 c/u','',controls=>{makeStepper(controls,n=>qty=n);const label=document.createElement('label');label.className='extra';const cb=document.createElement('input');cb.type='checkbox';cb.onchange=()=>cheese=cb.checked;label.append(cb,document.createTextNode('Con queso (+$7)'));controls.append(label);const btn=document.createElement('button');btn.className='add';btn.textContent='Agregar';btn.onclick=()=>{if(!qty){alert('Selecciona la cantidad de tacos.');return}add(`${qty} taco(s) de ${name}${cheese?' con queso':''}`,qty*(30+(cheese?7:0)));};controls.append(btn)});});
+const packageBox=document.getElementById('packageProducts');
+const packages=[
+{title:'Paquete 1',price:480,desc:'1 kg de carne (pura cecina o campechano), 1 orden de nopales, 1 de cebolla, 1 queso fresco o asado, 1 vaso de crema, salsas y limones.',n:1},
+{title:'Paquete 2',price:240,desc:'½ kg de carne (pura cecina o campechano), ½ orden de nopales, ½ de cebolla, ½ queso fresco o asado, ½ vaso de crema, salsas y limones.',n:2},
+{title:'Orden',price:120,desc:'¼ de kilo de carne (pura cecina o campechano) y ¼ de cada componente: nopales, cebolla, queso y crema; incluye salsas y limones.',n:3}];
+packages.forEach(pkg=>{const wrap=document.createElement('div');wrap.className='package';const heading=document.createElement('div');heading.className='name';heading.textContent=pkg.title+' · $'+pkg.price;const desc=document.createElement('p');desc.textContent=pkg.desc;const meat=document.createElement('select');['Pura cecina','Campechano'].forEach(x=>meat.add(new Option(x,x)));const cheese=document.createElement('select');['Queso fresco','Queso asado'].forEach(x=>cheese.add(new Option(x,x)));const swap=document.createElement('input');swap.placeholder='Reemplazo solicitado (opcional)';const qty=document.createElement('input');qty.type='number';qty.min='1';qty.value='1';qty.style.width='75px';const btn=document.createElement('button');btn.className='add';btn.textContent='Agregar paquete';btn.onclick=()=>{const n=Math.max(1,Number(qty.value)||1);add(`${n} × ${pkg.title}`,n*pkg.price,`${meat.value}; ${cheese.value}${swap.value.trim()?'; Solicita reemplazo: '+swap.value.trim():''}`)};wrap.append(heading,desc);[ ['Carne',meat],['Queso',cheese],['Cantidad',qty],['Cambio (si aplica)',swap] ].forEach(([label,input])=>{const f=document.createElement('div');f.className='field';const l=document.createElement('label');l.textContent=label;f.append(l,input);wrap.append(f)});wrap.append(btn);packageBox.append(wrap)});
+const rawBox=document.getElementById('rawProducts');
+[['Cecina',330],['Longaniza',160],['Adobada',220]].forEach(([name,kg])=>{const row=document.createElement('div');row.className='product';const info=document.createElement('div');info.innerHTML=`<div class="name">${name}</div><div class="desc">$${kg} por kilo</div>`;const input=document.createElement('input');input.type='number';input.min='1';input.placeholder='Importe $';input.style.width='110px';const btn=document.createElement('button');btn.className='add';btn.textContent='Agregar';btn.onclick=()=>{const amount=Math.floor(Number(input.value));if(!amount){alert('Escribe el importe que deseas.');return}add(`$${amount} de ${name}`,amount,`Aproximadamente ${Math.round(amount/kg*1000)} g`);input.value=''};const c=document.createElement('div');c.append(input,btn);row.append(info,c);rawBox.append(row)});
+document.getElementById('addOtherRaw').onclick=()=>{const v=document.getElementById('otherRaw').value.trim();if(!v){alert('Escribe el producto y la cantidad.');return}add('Carne especial (precio por confirmar)',0,v);document.getElementById('otherRaw').value=''};
+const extras=[['Orden de nopales',20],['Orden de cebollitas',20],['Orden combinada (½ nopales + ½ cebollitas)',20],['Pieza de queso',50]];
+const extraBox=document.getElementById('extraProducts');extras.forEach(([name,price])=>productRow(extraBox,name,'$'+price,'',controls=>{makeStepper(controls,n=>{});const btn=document.createElement('button');btn.className='add';btn.textContent='Agregar';btn.onclick=()=>add(name,price);controls.append(btn)}));
+function drinks(target,names,price,unit){const box=document.getElementById(target);names.forEach(name=>productRow(box,name,'$'+price,unit,controls=>{makeStepper(controls,n=>{});const btn=document.createElement('button');btn.className='add';btn.textContent='Agregar';btn.onclick=()=>add(name,price);controls.append(btn)}))}
+drinks('sodaProducts',['Coca-Cola','Jarritos (sabor disponible)'],25,'½ litro');drinks('waterProducts',['Horchata','Jamaica','Limón con chía','Agua de otro sabor disponible'],35,'1 litro');
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.tab))});
+function renderCart(){const box=document.getElementById('cartItems');box.innerHTML='';if(!cart.length){box.textContent='Aún no agregas productos.'}else cart.forEach((item,i)=>{const line=document.createElement('div');line.className='cartline';const left=document.createElement('div');const name=document.createElement('b');name.textContent=item.name;left.append(name);if(item.detail){const d=document.createElement('small');d.textContent=item.detail;left.append(d)}const right=document.createElement('div');right.textContent='$'+item.price+' ';const remove=document.createElement('button');remove.className='remove';remove.textContent='Quitar';remove.onclick=()=>{cart.splice(i,1);renderCart()};right.append(remove);line.append(left,right);box.append(line)});document.getElementById('total').textContent=cart.reduce((s,x)=>s+x.price,0)}
+document.getElementById('clear').onclick=()=>{cart.length=0;renderCart();document.getElementById('status').textContent='Carrito vacío.'};
+const SUPABASE_URL='https://ymydgnvuddaanheocwrk.supabase.co';
+const SUPABASE_KEY='sb_publishable_1TmEH4iOXvwpOJ6gLGfQDQ_2Kw6Sv7x';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const statusEl=document.getElementById('status');
+document.getElementById('sendOrder').onclick=async()=>{
+ if(!cart.length){alert('Agrega productos al carrito.');return}
+ const customer=document.getElementById('customer').value.trim();
+ if(!customer){alert('Escribe tu nombre.');return}
+ const total=cart.reduce((sum,item)=>sum+Number(item.price||0),0);
+ const payload={nombre_cliente:customer,telefono:null,productos:cart.map(item=>({nombre:item.name,precio:Number(item.price||0),detalle:item.detail||''})),total,notas:document.getElementById('notes').value.trim()||null,estado:'Pendiente'};
+ const btn=document.getElementById('sendOrder');btn.disabled=true;btn.textContent='Enviando…';
+ try{const {error}=await db.from('pedidos').insert(payload);if(error)throw error;cart.length=0;renderCart();document.getElementById('customer').value='';document.getElementById('notes').value='';statusEl.textContent='¡Pedido recibido! Gracias por comprar en YecaTaco.';}
+ catch(error){console.error('Error al guardar pedido en Supabase:',error);const parts=[error?.message,error?.code,error?.details,error?.hint].filter(Boolean);statusEl.textContent='Error de Supabase: '+(parts.join(' | ')||'No se recibió un detalle.');}
+ finally{btn.disabled=false;btn.textContent='Enviar pedido'}
+};
+const adminPanel=document.getElementById('adminPanel');
+document.getElementById('adminToggle').onclick=()=>adminPanel.classList.toggle('active');
+const adminStatus=document.getElementById('adminStatus');
+function showAdminSession(session){document.getElementById('adminLogin').hidden=!!session;document.getElementById('adminDashboard').hidden=!session;if(session)loadOrders()}
+async function loadOrders(){const box=document.getElementById('ordersList');box.textContent='Cargando pedidos…';const {data,error}=await db.from('pedidos').select('*').order('creado_en',{ascending:false});if(error){box.textContent='No se pudieron cargar los pedidos. Verifica las políticas de seguridad de Supabase.';console.error(error);return}if(!data.length){box.textContent='Todavía no hay pedidos.';return}box.innerHTML='';data.forEach(order=>{const card=document.createElement('article');card.style.cssText='border:1px solid #eadfd5;border-radius:10px;padding:12px;margin:10px 0;background:#fff';const heading=document.createElement('b');heading.textContent=`Pedido #${order.id} · ${order.nombre_cliente}`;card.append(heading);const date=document.createElement('p');date.className='muted';date.textContent=new Date(order.creado_en).toLocaleString('es-MX');card.append(date);const items=document.createElement('div');items.style.whiteSpace='pre-wrap';items.textContent=(order.productos||[]).map(x=>`• ${x.nombre} — $${Number(x.precio||0).toFixed(2)}${x.detalle?' ('+x.detalle+')':''}`).join('\n');card.append(items);const total=document.createElement('p');total.innerHTML='<b>Total: $'+Number(order.total).toFixed(2)+'</b>';card.append(total);if(order.notas){const note=document.createElement('p');note.textContent='Indicaciones: '+order.notas;card.append(note)}const controls=document.createElement('div');controls.className='field';const label=document.createElement('label');label.textContent='Estado';const select=document.createElement('select');['Pendiente','En preparación','Entregado'].forEach(v=>select.add(new Option(v,v)));select.value=order.estado||'Pendiente';select.onchange=async()=>{const {error}=await db.from('pedidos').update({estado:select.value}).eq('id',order.id);adminStatus.textContent=error?'No se pudo actualizar el estado.':'Estado actualizado.';if(error)console.error(error)};controls.append(label,select);card.append(controls);box.append(card)})}
+document.getElementById('loginAdmin').onclick=async()=>{adminStatus.textContent='Iniciando sesión…';const email=document.getElementById('adminEmail').value.trim();const password=document.getElementById('adminPassword').value;if(!email||!password){adminStatus.textContent='Escribe tu correo y contraseña.';return}const {data,error}=await db.auth.signInWithPassword({email,password});if(error){adminStatus.textContent='No se pudo iniciar sesión. Revisa tus datos.';console.error(error);return}adminStatus.textContent='Sesión iniciada.';showAdminSession(data.session)};
+document.getElementById('logoutAdmin').onclick=async()=>{await db.auth.signOut();showAdminSession(null);adminStatus.textContent='Sesión cerrada.'};
+document.getElementById('refreshOrders').onclick=loadOrders;
+db.auth.getSession().then(({data})=>{if(data.session)showAdminSession(data.session)});
+renderCart();
+</script></body></html>
